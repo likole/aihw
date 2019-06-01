@@ -3,7 +3,7 @@ package com.likole.aihw.preprocess.spider.article;
 import com.likole.aihw.bean.Article;
 import com.likole.aihw.bean.Author;
 import com.likole.aihw.bean.AuthorArticle;
-import com.likole.aihw.preprocess.DBUtils;
+import com.likole.aihw.preprocess.DbUtils;
 import org.jsoup.select.Elements;
 import org.nutz.json.Json;
 import us.codecraft.xsoup.Xsoup;
@@ -54,36 +54,39 @@ public class PostProcess {
                     article.setWos(value.substring(4));
                     break;
                 default:
-
             }
         }
-        System.out.println(article);
         //insert
-        DBUtils.getDao().insertOrUpdate(article);
+        DbUtils.getDao().insertOrUpdate(article);
         //wordcloud
-        if(article.getAbstractt()!=null&&article.getKeyword()!=null){
-            WordCloud.generate(article.getWos(),article.getAbstractt(), (List<String>) Json.fromJson(article.getKeyword()));
+        if(article.getAbstractt()!=null){
+            if(article.getKeyword()==null){
+                WordCloud.generate(article.getWos(),article.getAbstractt());
+            }else{
+                WordCloud.generate(article.getWos(),article.getAbstractt(), (List<String>) Json.fromJson(article.getKeyword()));
+            }
         }
         //extract author
         List<String> authorFullNames= (List<String>) Json.fromJson(article.getAuthorFullname());
         List<String> authorShortNames= (List<String>) Json.fromJson(article.getAuthor());
         for(int i=0;i<authorFullNames.size();i++){
             //author count
-            Author author=DBUtils.getDao().fetch(Author.class,authorFullNames.get(i));
+            Author author= DbUtils.getDao().fetch(Author.class,authorFullNames.get(i));
             if(author==null){
                 author=new Author();
                 author.setAuthorFullName(authorFullNames.get(i));
                 author.setAuthorShortName(authorShortNames.get(i));
                 author.setArticleNumbers(0);
             }
+            author.setFirstYear(article.getYear());
             author.setArticleNumbers(author.getArticleNumbers()+1);
-            DBUtils.getDao().insertOrUpdate(author);
+            DbUtils.getDao().insertOrUpdate(author);
             //author article
             AuthorArticle authorArticle=new AuthorArticle();
             authorArticle.setAuthorFullName(authorFullNames.get(i));
             authorArticle.setTitle(article.getTitle());
             authorArticle.setWos(article.getWos());
-            DBUtils.getDao().insertOrUpdate(authorArticle);
+            DbUtils.getDao().insertOrUpdate(authorArticle);
         }
         System.out.println(article.getWos() + " updated!");
     }

@@ -7,7 +7,7 @@ import org.nutz.dao.impl.SimpleDataSource;
 /**
  * @author likole
  */
-public class DBUtils {
+public class DbUtils {
     private static Dao dao;
 
     public static Dao getDao() {

@@ -1,7 +1,7 @@
 package com.likole.aihw.preprocess.spider.reference;
 
 import com.likole.aihw.bean.ArticleReference;
-import com.likole.aihw.preprocess.DBUtils;
+import com.likole.aihw.preprocess.DbUtils;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
@@ -25,7 +25,7 @@ public class DbPipeline implements Pipeline {
             articleReference.setFromTitle(fromTitle);
             articleReference.setToWOS(toWOSs.get(i).substring(toWOSs.get(i).indexOf("WOS:")+4));
             articleReference.setToTitle(toTitles.get(i));
-            DBUtils.getDao().insertOrUpdate(articleReference);
+            DbUtils.getDao().insertOrUpdate(articleReference);
         }
     }
 }

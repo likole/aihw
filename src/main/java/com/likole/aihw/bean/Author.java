@@ -18,6 +18,18 @@ public class Author {
     @Default("0")
     private int articleNumbers;
 
+    @Column
+    private int firstYear;
+
+    public int getFirstYear() {
+        return firstYear;
+    }
+
+    public void setFirstYear(int firstYear) {
+        if(this.firstYear==0||this.firstYear>firstYear) {
+            this.firstYear = firstYear;
+        }
+    }
 
     public int getArticleNumbers() {
         return articleNumbers;

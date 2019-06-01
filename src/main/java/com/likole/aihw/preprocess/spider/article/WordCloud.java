@@ -10,6 +10,7 @@ import com.kennycason.kumo.nlp.tokenizer.WhiteSpaceWordTokenizer;
 import com.kennycason.kumo.palette.LinearGradientColorPalette;
 
 import java.awt.*;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,11 @@ import java.util.List;
  * @author likole
  */
 public class WordCloud {
+
+    public static void generate(String wos,String abstractt){
+        List<String> keywords=new ArrayList<>();
+        generate(wos,abstractt,keywords);
+    }
 
     public static void generate(String wos,String abstractt, List<String> keywords){
         FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
