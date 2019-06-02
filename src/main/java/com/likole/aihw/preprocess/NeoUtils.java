@@ -11,7 +11,7 @@ public class NeoUtils {
     private static GraphDatabaseService graphDb;
 
     public enum NodeTypes implements Label {
-        AUTHOR
+        AUTHOR,ARTICLE
     }
 
     public enum RelTypes implements RelationshipType {
