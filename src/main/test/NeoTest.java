@@ -12,7 +12,7 @@ public class NeoTest {
 
     @Test
     public void start() {
-        final GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File("webapp/static/db/authors"));
+        final GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File("src/main/webapp/static/db/databases/graph.db"));
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
