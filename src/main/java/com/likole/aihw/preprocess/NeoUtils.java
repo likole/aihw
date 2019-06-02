@@ -1,9 +1,7 @@
 package com.likole.aihw.preprocess;
 
-import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.internal.kernel.api.procs.Neo4jTypes;
 
 import java.io.File;
 
@@ -21,7 +19,7 @@ public class NeoUtils {
     }
 
 
-    private static void setHook(final GraphDatabaseService graphDb){
+    private static void setHook(final GraphDatabaseService graphDb) {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -30,9 +28,9 @@ public class NeoUtils {
         });
     }
 
-    public static GraphDatabaseService db(){
-        if(graphDb==null){
-            graphDb= new GraphDatabaseFactory().newEmbeddedDatabase(new File("db/databases/graph.db"));
+    public static GraphDatabaseService db() {
+        if (graphDb == null) {
+            graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File("db/databases/graph.db"));
             setHook(graphDb);
         }
         return graphDb;

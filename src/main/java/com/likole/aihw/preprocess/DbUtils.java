@@ -10,6 +10,7 @@ import org.nutz.dao.impl.SimpleDataSource;
 public class DbUtils {
     private static Dao dao;
 
+
     public static Dao getDao() {
         if (dao == null) {
             SimpleDataSource dataSource = new SimpleDataSource();
@@ -20,4 +21,6 @@ public class DbUtils {
         }
         return dao;
     }
+
+
 }

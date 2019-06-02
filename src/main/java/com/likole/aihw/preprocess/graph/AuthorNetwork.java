@@ -4,13 +4,19 @@ import com.likole.aihw.bean.Article;
 import com.likole.aihw.bean.Author;
 import com.likole.aihw.preprocess.DbUtils;
 import com.likole.aihw.preprocess.NeoUtils;
+import org.neo4j.cypher.internal.frontend.v2_3.ast.functions.Str;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.nutz.json.Json;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * @author likole
+ */
 public class AuthorNetwork {
 
     public void processNodes(){
@@ -53,9 +59,32 @@ public class AuthorNetwork {
         }
     }
 
+    public void processRelationships2(){
+        List<Article> articles=DbUtils.getDao().query(Article.class,null);
+        try (Transaction tx = NeoUtils.db().beginTx()) {
+            for (Article article:articles){
+                List<String> authors= (List<String>) Json.fromJson(article.getAuthorFullname());
+                if(authors==null||authors.size()<=1) {
+                    continue;
+                }
+                for(int i=0;i<authors.size();i++){
+                    for (int j=i+1;j<authors.size();j++){
+                        Map<String,Object> params=new HashMap<>();
+                        params.put("a",authors.get(i));
+                        params.put("b",authors.get(j));
+                        params.put("c",article.getTitle());
+                        NeoUtils.db().execute("MATCH (a:AUTHOR{name:$a}),(b:AUTHOR{name:$b}) MERGE (a)-[r:COOPERATE{article:$c}]->(b)",params);
+                    }
+                }
+            }
+            tx.success();
+        }
+    }
+
 
     public static void main(String[] args) {
         AuthorNetwork authorNetwork=new AuthorNetwork();
-        authorNetwork.processRelationships();
+//        authorNetwork.processNodes();
+        authorNetwork.processRelationships2();
     }
 }
