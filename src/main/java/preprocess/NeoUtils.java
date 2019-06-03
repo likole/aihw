@@ -1,4 +1,4 @@
-package com.likole.aihw.preprocess;
+package preprocess;
 
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;

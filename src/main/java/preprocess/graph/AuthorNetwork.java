@@ -1,9 +1,9 @@
-package com.likole.aihw.preprocess.graph;
+package preprocess.graph;
 
 import com.likole.aihw.bean.Article;
 import com.likole.aihw.bean.Author;
-import com.likole.aihw.preprocess.DbUtils;
-import com.likole.aihw.preprocess.NeoUtils;
+import preprocess.DbUtils;
+import preprocess.NeoUtils;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;

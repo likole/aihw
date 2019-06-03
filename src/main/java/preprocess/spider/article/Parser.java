@@ -1,4 +1,4 @@
-package com.likole.aihw.preprocess.spider.article;
+package preprocess.spider.article;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

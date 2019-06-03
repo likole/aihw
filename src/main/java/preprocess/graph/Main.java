@@ -1,4 +1,4 @@
-package com.likole.aihw.preprocess.graph;
+package preprocess.graph;
 
 /**
  * @author likole
@@ -11,6 +11,7 @@ public class Main {
 //        authorNetwork.processRelationships2();
         ReferenceNetwork referenceNetwork = new ReferenceNetwork();
 //        referenceNetwork.processNodes();
-        referenceNetwork.processRelationships2();
+//        referenceNetwork.processRelationships2();
+        referenceNetwork.processRelationships3();
     }
 }

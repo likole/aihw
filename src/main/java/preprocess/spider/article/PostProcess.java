@@ -1,9 +1,9 @@
-package com.likole.aihw.preprocess.spider.article;
+package preprocess.spider.article;
 
 import com.likole.aihw.bean.Article;
 import com.likole.aihw.bean.Author;
 import com.likole.aihw.bean.AuthorArticle;
-import com.likole.aihw.preprocess.DbUtils;
+import preprocess.DbUtils;
 import org.jsoup.select.Elements;
 import org.nutz.json.Json;
 import us.codecraft.xsoup.Xsoup;

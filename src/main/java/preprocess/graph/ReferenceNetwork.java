@@ -1,8 +1,8 @@
-package com.likole.aihw.preprocess.graph;
+package preprocess.graph;
 
 import com.likole.aihw.bean.ArticleReference;
-import com.likole.aihw.preprocess.DbUtils;
-import com.likole.aihw.preprocess.NeoUtils;
+import preprocess.DbUtils;
+import preprocess.NeoUtils;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 public class ReferenceNetwork {
+    /**
+     * 添加论文节点
+     */
     public void processNodes() {
         List<ArticleReference> reference = DbUtils.getDao().query(ArticleReference.class, null);
         try (Transaction tx = NeoUtils.db().beginTx()) {
@@ -60,6 +63,9 @@ public class ReferenceNetwork {
         }
     }
 
+    /**
+     * 共被引分析
+     */
     public void processRelationships2() {
         Sql sql = Sqls.create("SELECT DISTINCT fromWOS FROM article_reference");
         sql.setCallback(Sqls.callback.strList());
@@ -75,6 +81,31 @@ public class ReferenceNetwork {
                         params.put("b", tos.get(j).getToWOS());
                         params.put("c", tos.get(i).getFromTitle());
                         NeoUtils.db().execute("MATCH (a:ARTICLE{wos:$a}),(b:ARTICLE{wos:$b}) MERGE (a)-[r:CO_CITATION{title:$c}]->(b)", params);
+                    }
+                }
+            }
+            tx.success();
+        }
+    }
+
+    /**
+     * 耦合分析
+     */
+    public void processRelationships3() {
+        Sql sql = Sqls.create("SELECT DISTINCT toWOS FROM article_reference");
+        sql.setCallback(Sqls.callback.strList());
+        DbUtils.getDao().execute(sql);
+        List<String> tos = sql.getList(String.class);
+        try (Transaction tx = NeoUtils.db().beginTx()) {
+            for (String to : tos) {
+                List<ArticleReference> froms = DbUtils.getDao().query(ArticleReference.class, Cnd.where("toWOS", "=", to));
+                for (int i = 0; i < froms.size(); i++) {
+                    for (int j = i + 1; j < froms.size(); j++) {
+                        Map<String, Object> params = new HashMap<>();
+                        params.put("a", froms.get(i).getFromWOS());
+                        params.put("b", froms.get(j).getFromWOS());
+                        params.put("c", froms.get(i).getToTitle());
+                        NeoUtils.db().execute("MATCH (a:ARTICLE{wos:$a}),(b:ARTICLE{wos:$b}) MERGE (a)-[r:COUPLING{title:$c}]->(b)", params);
                     }
                 }
             }

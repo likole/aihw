@@ -1,4 +1,4 @@
-package com.likole.aihw.preprocess.spider.article;
+package preprocess.spider.article;
 
 import com.kennycason.kumo.CollisionMode;
 import com.kennycason.kumo.WordFrequency;

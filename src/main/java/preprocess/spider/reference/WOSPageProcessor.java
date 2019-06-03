@@ -1,4 +1,4 @@
-package com.likole.aihw.preprocess.spider.reference;
+package preprocess.spider.reference;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;

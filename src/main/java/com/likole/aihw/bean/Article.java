@@ -2,6 +2,8 @@ package com.likole.aihw.bean;
 
 import org.nutz.dao.entity.annotation.*;
 
+import java.util.List;
+
 /**
  * @author likole
  */
@@ -42,8 +44,28 @@ public class Article {
     @ColDefine(type = ColType.TEXT)
     private String keyword;
 
+    private List<String> keywords;
+
+    private List<String> authorFullNames;
+
+    public List<String> getAuthorFullNames() {
+        return authorFullNames;
+    }
+
+    public void setAuthorFullNames(List<String> authorFullNames) {
+        this.authorFullNames = authorFullNames;
+    }
+
     @Column
     private int year;
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(List<String> keywords) {
+        this.keywords = keywords;
+    }
 
     public String getKeyword() {
         return keyword;
