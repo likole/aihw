@@ -1,6 +1,7 @@
 package preprocess.graph;
 
 import com.likole.aihw.bean.ArticleReference;
+import com.likole.aihw.bean.KeywordArticle;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
@@ -28,12 +29,14 @@ public class ReferenceNetwork {
                 NeoUtils.db().execute("merge (a:ARTICLE{wos:$wos,title:$title})", params);
                 NeoUtils.db().execute("match (a:ARTICLE{wos:$wos}) merge (a)-[:COUPING_FIELD]->(:COUPING_CENTER)",params);
                 NeoUtils.db().execute("match (a:ARTICLE{wos:$wos}) merge (a)-[:CO_CITATION_FIELD]->(:CO_CITATION_CENTER)",params);
+                NeoUtils.db().execute("match (a:ARTICLE{wos:$wos}) merge (a)-[:CO_TEXT_FIELD]->(:CO_TEXT_CENTER)",params);
                 System.out.println("已插入节点" + articleReference.getFromWOS());
                 params.put("wos", articleReference.getToWOS());
                 params.put("title", articleReference.getToTitle());
                 NeoUtils.db().execute("merge (a:ARTICLE{wos:$wos,title:$title})", params);
                 NeoUtils.db().execute("match (a:ARTICLE{wos:$wos}) merge (a)-[:COUPING_FIELD]->(:COUPING_CENTER)",params);
                 NeoUtils.db().execute("match (a:ARTICLE{wos:$wos}) merge (a)-[:CO_CITATION_FIELD]->(:CO_CITATION_CENTER)",params);
+                NeoUtils.db().execute("match (a:ARTICLE{wos:$wos}) merge (a)-[:CO_TEXT_FIELD]->(:CO_TEXT_CENTER)",params);
                 System.out.println("已插入节点" + articleReference.getToWOS());
             }
             tx.success();
@@ -128,6 +131,38 @@ public class ReferenceNetwork {
                     }
                 }
                 System.out.println("已插入耦合" + to);
+            }
+            tx.success();
+        }
+    }
+
+    /**
+     * 共篇分析
+     */
+    public void processRelationships4() {
+        Sql sql = Sqls.create("SELECT DISTINCT keyword FROM keyword_article");
+        sql.setCallback(Sqls.callback.strList());
+        DbUtils.getDao().execute(sql);
+        List<String> keywords = sql.getList(String.class);
+        try (Transaction tx = NeoUtils.db().beginTx()) {
+            for (String keyword : keywords) {
+                List<KeywordArticle> articles = DbUtils.getDao().query(KeywordArticle.class, Cnd.where("keyword", "=", keyword));
+                for (int i = 0; i < articles.size(); i++) {
+                    for (int j = 0; j < articles.size(); j++) {
+                        if(i==j) {
+                            continue;
+                        }
+                        Map<String, Object> params = new HashMap<>();
+                        params.put("a", articles.get(i).getWos());
+                        params.put("b", articles.get(j).getWos());
+                        params.put("c", articles.get(i).getTitle());
+                        NeoUtils.db().execute("MATCH (:ARTICLE{wos:$a})-[:CO_TEXT_FIELD]->(a),(b:ARTICLE{wos:$b}) " +
+                                "MERGE (a)-[r:CO_TEXT]->(b) " +
+                                "on match set r.num=r.num+1 " +
+                                "on create set r.num=1", params);
+                    }
+                }
+                System.out.println("已插入共篇" + keyword);
             }
             tx.success();
         }

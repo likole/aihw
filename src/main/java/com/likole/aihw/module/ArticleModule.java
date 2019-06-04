@@ -127,4 +127,24 @@ public class ArticleModule {
         driver.close();
         return new NutMap().setv("code",0).setv("citations",coCitation);
     }
+
+    @At("/ct")
+    public Object cotext(@Param("wos")String wos){
+        List<Article> cotexts=new ArrayList<>();
+        Driver driver = GraphDatabase.driver("bolt://localhost:7687",
+                AuthTokens.basic("neo4j","397032663"));
+        try(Session session = driver.session()){
+            StatementResult result = session.run("match (:ARTICLE{wos:{WOS}})-[:CO_TEXT_FIELD]->(a)-[r]->(b) return b.wos as wos,b.title as title",
+                    parameters("WOS",wos));
+            while (result.hasNext()){
+                Record record=result.next();
+                Article article=new Article();
+                article.setWos(record.get("wos").asString());
+                article.setTitle(record.get("title").asString());
+                cotexts.add(article);
+            }
+        }
+        driver.close();
+        return new NutMap().setv("code",0).setv("cotexts",cotexts);
+    }
 }
