@@ -1,4 +1,4 @@
-package preprocess;
+package preprocess.utils;
 
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -11,7 +11,7 @@ public class NeoUtils {
     private static GraphDatabaseService graphDb;
 
     public enum NodeTypes implements Label {
-        AUTHOR,ARTICLE
+        AUTHOR,ARTICLE,COUPLING_CENTER,CO_CITATION_CENTER,COUPLING_FIELD,CO_CITATION_FIELD,COUPLING,CO_CITATION
     }
 
     public enum RelTypes implements RelationshipType {

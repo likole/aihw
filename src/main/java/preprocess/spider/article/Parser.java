@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public class Parser {
 
-    private void parse(String url) throws IOException {
+    public void parse(String url) throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -33,12 +33,4 @@ public class Parser {
 
         }
     }
-
-    public static void main(String[] args) throws IOException {
-        Parser parser = new Parser();
-        parser.parse("http://127.0.0.1:8082/static/1.html");
-        parser.parse("http://127.0.0.1:8082/static/2.html");
-        parser.parse("http://127.0.0.1:8082/static/3.html");
-    }
-
 }

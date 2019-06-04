@@ -3,7 +3,8 @@ package preprocess.spider.article;
 import com.likole.aihw.bean.Article;
 import com.likole.aihw.bean.Author;
 import com.likole.aihw.bean.AuthorArticle;
-import preprocess.DbUtils;
+import com.likole.aihw.bean.KeywordArticle;
+import preprocess.utils.DbUtils;
 import org.jsoup.select.Elements;
 import org.nutz.json.Json;
 import us.codecraft.xsoup.Xsoup;
@@ -33,7 +34,7 @@ public class PostProcess {
                     article.setAuthorFullname(Json.toJson(value.split(" <br>")));
                     break;
                 case "DE":
-                    article.setKeyword(Json.toJson(value.split(" <br>")));
+                    article.setKeyword(Json.toJson(value.split("; ")));
                     break;
                 case "TI":
                     article.setTitle(value);
@@ -56,17 +57,28 @@ public class PostProcess {
                 default:
             }
         }
-        //insert
-        DbUtils.getDao().insertOrUpdate(article);
-        //wordcloud
-        if(article.getAbstractt()!=null){
-            if(article.getKeyword()==null){
-                WordCloud.generate(article.getWos(),article.getAbstractt());
-            }else{
-                WordCloud.generate(article.getWos(),article.getAbstractt(), (List<String>) Json.fromJson(article.getKeyword()));
-            }
+//        DbUtils.getDao().insertOrUpdate(article);
+//        processWordcloud(article);
+//        extractAuthor(article);
+        extractKeyword(article);
+        System.out.println(article.getWos() + " updated!");
+    }
+
+    private static void extractKeyword(Article article) {
+        if(article.getKeyword()==null) {
+            return;
         }
-        //extract author
+        List<String> keywords= (List<String>) Json.fromJson(article.getKeyword());
+        for(String keyword:keywords){
+            KeywordArticle keywordArticle=new KeywordArticle();
+            keywordArticle.setKeyword(keyword);
+            keywordArticle.setWos(article.getWos());
+            keywordArticle.setTitle(article.getTitle());
+            DbUtils.getDao().insertOrUpdate(keywordArticle);
+        }
+    }
+
+    private static void extractAuthor(Article article) {
         List<String> authorFullNames= (List<String>) Json.fromJson(article.getAuthorFullname());
         List<String> authorShortNames= (List<String>) Json.fromJson(article.getAuthor());
         for(int i=0;i<authorFullNames.size();i++){
@@ -88,6 +100,15 @@ public class PostProcess {
             authorArticle.setWos(article.getWos());
             DbUtils.getDao().insertOrUpdate(authorArticle);
         }
-        System.out.println(article.getWos() + " updated!");
+    }
+
+    private static void processWordcloud(Article article) {
+        if(article.getAbstractt()!=null){
+            if(article.getKeyword()==null){
+                WordCloud.generate(article.getWos(),article.getAbstractt());
+            }else{
+                WordCloud.generate(article.getWos(),article.getAbstractt(), (List<String>) Json.fromJson(article.getKeyword()));
+            }
+        }
     }
 }

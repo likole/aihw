@@ -1,9 +1,6 @@
 package com.likole.aihw.bean;
 
-import org.nutz.dao.entity.annotation.Column;
-import org.nutz.dao.entity.annotation.PK;
-import org.nutz.dao.entity.annotation.Table;
-import org.nutz.dao.entity.annotation.TableMeta;
+import org.nutz.dao.entity.annotation.*;
 
 @Table
 @PK({"fromWOS","toWOS"})
@@ -12,12 +9,14 @@ public class ArticleReference {
     private String fromWOS;
 
     @Column
+    @ColDefine(type = ColType.TEXT)
     private String fromTitle;
 
     @Column
     private String toWOS;
 
     @Column
+    @ColDefine(type = ColType.TEXT)
     private String toTitle;
 
     public String getFromWOS() {

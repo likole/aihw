@@ -1,7 +1,7 @@
 package preprocess.spider.reference;
 
 import com.likole.aihw.bean.ArticleReference;
-import preprocess.DbUtils;
+import preprocess.utils.DbUtils;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;

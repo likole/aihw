@@ -5,6 +5,7 @@ import com.likole.aihw.bean.Article;
 import com.likole.aihw.bean.ArticleReference;
 import com.likole.aihw.dto.WordCloudDto;
 import com.likole.aihw.utils.WordCloudUtils;
+import org.neo4j.driver.v1.*;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.dao.pager.Pager;
@@ -18,6 +19,8 @@ import org.nutz.mvc.annotation.Param;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.neo4j.driver.v1.Values.parameters;
 
 @At("/article")
 @IocBean
@@ -37,12 +40,7 @@ public class ArticleModule {
             if (article.getKeyword() == null) {
                 article.setKeywords(new ArrayList<String>());
             } else {
-                List<String> a = (List<String>) Json.fromJson(article.getKeyword());
-                if (a == null || a.size() == 0) {
-                    article.setKeywords(new ArrayList<String>());
-                } else {
-                    article.setKeywords(Arrays.asList(a.get(0).split("; ")));
-                }
+                article.setKeywords((List<String>) Json.fromJson(article.getKeyword()));
             }
             //author names
             if (article.getAuthorFullname() == null) {
@@ -68,12 +66,7 @@ public class ArticleModule {
         if (article.getKeyword() == null) {
             article.setKeywords(new ArrayList<String>());
         } else {
-            List<String> a = (List<String>) Json.fromJson(article.getKeyword());
-            if (a == null || a.size() == 0) {
-                article.setKeywords(new ArrayList<String>());
-            } else {
-                article.setKeywords(Arrays.asList(a.get(0).split("; ")));
-            }
+            article.setKeywords((List<String>) Json.fromJson(article.getKeyword()));
         }
         //wordcloud
         List<WordFrequency> wordFrequencies= WordCloudUtils.frequence(article.getAbstractt(),article.getKeywords());
@@ -93,5 +86,45 @@ public class ArticleModule {
         List<ArticleReference> tos=dao.query(ArticleReference.class, Cnd.where("fromWOS","=",wos));
         List<ArticleReference> froms=dao.query(ArticleReference.class, Cnd.where("toWOS","=",wos));
         return re.setv("code",0).setv("tos",tos).setv("froms",froms);
+    }
+
+    @At("/cp")
+    public Object couping(@Param("wos")String wos){
+        List<Article> coupings=new ArrayList<>();
+        Driver driver = GraphDatabase.driver("bolt://localhost:7687",
+                AuthTokens.basic("neo4j","397032663"));
+        try(Session session = driver.session()){
+            StatementResult result = session.run("match (:ARTICLE{wos:{WOS}})-[:COUPING_FIELD]->(a)-[r]->(b) return b.wos as wos,b.title as title",
+                    parameters("WOS",wos));
+            while (result.hasNext()){
+                Record record=result.next();
+                Article article=new Article();
+                article.setWos(record.get("wos").asString());
+                article.setTitle(record.get("title").asString());
+                coupings.add(article);
+            }
+        }
+        driver.close();
+        return new NutMap().setv("code",0).setv("coupings",coupings);
+    }
+
+    @At("/cc")
+    public Object cocitition(@Param("wos")String wos){
+        List<Article> coCitation=new ArrayList<>();
+        Driver driver = GraphDatabase.driver("bolt://localhost:7687",
+                AuthTokens.basic("neo4j","397032663"));
+        try(Session session = driver.session()){
+            StatementResult result = session.run("match (:ARTICLE{wos:{WOS}})-[:CO_CITATION_FIELD]->(a)-[r]->(b) return b.wos as wos,b.title as title",
+                    parameters("WOS",wos));
+            while (result.hasNext()){
+                Record record=result.next();
+                Article article=new Article();
+                article.setWos(record.get("wos").asString());
+                article.setTitle(record.get("title").asString());
+                coCitation.add(article);
+            }
+        }
+        driver.close();
+        return new NutMap().setv("code",0).setv("citations",coCitation);
     }
 }
