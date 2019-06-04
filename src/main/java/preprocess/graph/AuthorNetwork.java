@@ -27,11 +27,14 @@ public class AuthorNetwork {
                 s.setProperty("shortName", author.getAuthorShortName());
                 s.setProperty("nums", author.getArticleNumbers());
                 s.setProperty("year", author.getFirstYear());
+                Node to=NeoUtils.db().createNode(NeoUtils.NodeTypes.COOPERATE_CENTER);
+                s.createRelationshipTo(to,NeoUtils.RelTypes.COOPERATE_FIELD);
             }
             tx.success();
         }
     }
 
+    @Deprecated
     public void processRelationships() {
         List<Article> articles = DbUtils.getDao().query(Article.class, null);
         try (Transaction tx = NeoUtils.db().beginTx()) {
@@ -58,6 +61,9 @@ public class AuthorNetwork {
         }
     }
 
+    /**
+     * 作者合作网络
+     */
     public void processRelationships2() {
         List<Article> articles = DbUtils.getDao().query(Article.class, null);
         try (Transaction tx = NeoUtils.db().beginTx()) {
@@ -67,12 +73,19 @@ public class AuthorNetwork {
                     continue;
                 }
                 for (int i = 0; i < authors.size(); i++) {
-                    for (int j = i + 1; j < authors.size(); j++) {
+                    for (int j = 0; j < authors.size(); j++) {
+                        if(i==j){
+                            continue;
+                        }
                         Map<String, Object> params = new HashMap<>();
                         params.put("a", authors.get(i));
                         params.put("b", authors.get(j));
                         params.put("c", article.getTitle());
                         NeoUtils.db().execute("MATCH (a:AUTHOR{name:$a}),(b:AUTHOR{name:$b}) MERGE (a)-[r:COOPERATE{article:$c}]->(b)", params);
+                        NeoUtils.db().execute("MATCH (:AUTHOR{name:$a})-[:COOPERATE_FIELD]->(a),(b:AUTHOR{name:$b})" +
+                                "MERGE (a)-[r:COOPERATE]->(b) " +
+                                "on match set r.num=r.num+1 " +
+                                "on create set r.num=1", params);
                     }
                 }
             }

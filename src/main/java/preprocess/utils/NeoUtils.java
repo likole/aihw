@@ -11,11 +11,11 @@ public class NeoUtils {
     private static GraphDatabaseService graphDb;
 
     public enum NodeTypes implements Label {
-        AUTHOR,ARTICLE,COUPLING_CENTER,CO_CITATION_CENTER,COUPLING_FIELD,CO_CITATION_FIELD,COUPLING,CO_CITATION
+        AUTHOR,ARTICLE,COUPLING_CENTER,CO_CITATION_CENTER,COUPLING_FIELD,CO_CITATION_FIELD,COUPLING,CO_CITATION,COOPERATE_CENTER
     }
 
     public enum RelTypes implements RelationshipType {
-        COOPERATE
+        COOPERATE,COOPERATE_FIELD
     }
 
 
