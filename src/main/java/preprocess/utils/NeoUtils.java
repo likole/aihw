@@ -36,17 +36,4 @@ public class NeoUtils {
         return graphDb;
     }
 
-    public void start() {
-        try (Transaction tx = graphDb.beginTx()) {
-
-            Node firstNode = graphDb.createNode();
-            firstNode.setProperty("message", "Hello, ");
-            Node secondNode = graphDb.createNode();
-            secondNode.setProperty("message", "World!");
-
-            Relationship relationship = firstNode.createRelationshipTo(secondNode, RelTypes.COOPERATE);
-            relationship.setProperty("message", "brave Neo4j ");
-            tx.success();
-        }
-    }
 }

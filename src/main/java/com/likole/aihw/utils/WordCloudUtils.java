@@ -1,15 +1,9 @@
 package com.likole.aihw.utils;
 
-import com.kennycason.kumo.CollisionMode;
 import com.kennycason.kumo.WordFrequency;
-import com.kennycason.kumo.bg.CircleBackground;
-import com.kennycason.kumo.font.KumoFont;
-import com.kennycason.kumo.font.scale.SqrtFontScalar;
 import com.kennycason.kumo.nlp.FrequencyAnalyzer;
 import com.kennycason.kumo.nlp.tokenizer.WhiteSpaceWordTokenizer;
-import com.kennycason.kumo.palette.LinearGradientColorPalette;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

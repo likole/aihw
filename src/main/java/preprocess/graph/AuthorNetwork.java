@@ -28,6 +28,10 @@ public class AuthorNetwork {
                 s.setProperty("nums", author.getArticleNumbers());
                 s.setProperty("year", author.getFirstYear());
                 Node to=NeoUtils.db().createNode(NeoUtils.NodeTypes.COOPERATE_CENTER);
+                to.setProperty("name", author.getAuthorFullName());
+                to.setProperty("shortName", author.getAuthorShortName());
+                to.setProperty("nums", author.getArticleNumbers());
+                to.setProperty("year", author.getFirstYear());
                 s.createRelationshipTo(to,NeoUtils.RelTypes.COOPERATE_FIELD);
             }
             tx.success();
